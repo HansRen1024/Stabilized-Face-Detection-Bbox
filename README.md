@@ -1,5 +1,5 @@
 # Face-Alignment
-Based on Onet to do face alignment.  Fast, Smooth.
+Based on Onet to do face alignment. Fast, Smooth.
 
 ---
 
@@ -7,6 +7,6 @@ Based on Onet to do face alignment.  Fast, Smooth.
 
 ---
 
-**Reference**
+# Reference
 
 https://github.com/CongWeilin/mtcnn-caffe
