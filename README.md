@@ -1,5 +1,5 @@
-# Face-Alignment
-Based on Onet to do face alignment. Fast, Smooth.
+# Stabilized-Face-Detection-Bbox
+Based on Onet to stabilize Face Detection BoundingBox. Fast, Smooth.
 
 ---
 
