@@ -1,4 +1,7 @@
+### 2018.11.06 Release cpp codes on ncnn framework.
+
 # Stabilized-Face-Detection-Bbox
+
 Based on Onet to stabilize Face Detection BoundingBox. Fast, Smooth.
 
 ---
