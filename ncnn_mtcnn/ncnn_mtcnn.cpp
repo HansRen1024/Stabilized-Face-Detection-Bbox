@@ -67,6 +67,7 @@ private:
 	string UnionIOU="Union";
 	Bbox LaFaceBox,CuFaceBox,rectangle,MeanNose,MeanFaceBox;
 	vector< pair<int,int>> NoseList,CuFaceBoxList;
+	std::vector<int> padList;
 	vector<Bbox> rectangles;
 	float IOUthres = 0.95;
 	int MeanFrame = 5;
@@ -387,8 +388,17 @@ int faceDect::detectMain(cv::Mat& cv_img, vector<int>& faceBox, float& costTime)
 	rectangle = rectangles[0];
 	float rouRate  = rou((rectangle.x2-rectangle.x1)/float(cv_img.cols),1);
 	pad = round(0.7*rouRate*cv_img.cols/2);
-	NoseList.push_back(make_pair(rectangle.ppoint[2],rectangle.ppoint[7]));
-	while (int(NoseList.size())>MeanFrame)NoseList.erase(NoseList.begin());
+	padList.push_back(pad);
+	NoseList.push_back(make_pair(round((rectangle.x2+rectangle.x1)/2),round((rectangle.y2+rectangle.y1)/2)));
+	while (int(NoseList.size())>MeanFrame){
+		NoseList.erase(NoseList.begin());
+		padList.erase(padList.begin());
+	}
+	int MeanPad=0;
+	for(vector<int>::iterator it=padList.begin(); it!=padList.end();it++){
+		MeanPad+=int(round((*it)/float(padList.size())));
+	}
+	padList.push_back(MeanPad);
 	MeanNose.x1=0;
 	MeanNose.y1=0;
 	for(vector< pair<int,int>>::iterator it=NoseList.begin(); it!=NoseList.end();it++){
@@ -396,10 +406,10 @@ int faceDect::detectMain(cv::Mat& cv_img, vector<int>& faceBox, float& costTime)
 		MeanNose.y1+=int(round((*it).second/float(NoseList.size())));
 	}
 	NoseList.push_back(make_pair(MeanNose.x1,MeanNose.y1));
-	CuFaceBox.x1 = MeanNose.x1-pad;
-	CuFaceBox.y1 = MeanNose.y1-pad;
-	CuFaceBox.x2 = MeanNose.x1+pad;
-	CuFaceBox.y2 = MeanNose.y1+pad;
+	CuFaceBox.x1 = MeanNose.x1-MeanPad;
+	CuFaceBox.y1 = MeanNose.y1-MeanPad;
+	CuFaceBox.x2 = MeanNose.x1+MeanPad;
+	CuFaceBox.y2 = MeanNose.y1+MeanPad;
 	if(!LaFaceBox.exist){
 		LaFaceBox=CuFaceBox;
 		LaFaceBox.exist=true;
@@ -421,8 +431,8 @@ int faceDect::detectMain(cv::Mat& cv_img, vector<int>& faceBox, float& costTime)
 	faceBox.resize(4);
 	faceBox[0] = MeanFaceBox.x1;
 	faceBox[1] = MeanFaceBox.y1;
-	faceBox[2] = MeanFaceBox.x1+pad*2;
-	faceBox[3] = MeanFaceBox.y1+pad*2;
+	faceBox[2] = MeanFaceBox.x1+MeanPad*2;
+	faceBox[3] = MeanFaceBox.y1+MeanPad*2;
 	gettimeofday(&tv2,&tz2);
 	costTime = getElapse(&tv1, &tv2);
 	return 0;
